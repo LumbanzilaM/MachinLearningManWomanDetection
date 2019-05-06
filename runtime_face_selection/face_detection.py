@@ -15,7 +15,7 @@ class FaceDetection(object):
         return self.isolate_faces(cv.cvtColor(frame, cv.COLOR_BGR2GRAY), frame)
 
     def isolate_faces(self, greyscaled_frame, colorized_frame):
-        face_rects = self.face_detector(greyscaled_frame, 3)
+        face_rects = self.face_detector(greyscaled_frame, 0)
         bounding_boxes = []
         labels = []
         for rect in face_rects:
