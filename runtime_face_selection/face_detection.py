@@ -2,14 +2,19 @@ import cv2 as cv
 from imutils import face_utils
 import dlib
 import numpy as np
+from PIL import Image
+from tensorflow import keras
 
+
+MODEL_PATH = "model.h5"
 
 class FaceDetection(object):
-    def __init__(self, rect_size=96):
+    def __init__(self, rect_size=400):
         self.face_detector = dlib.get_frontal_face_detector()
         self.face_predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
-        self.eye_position = (.35, .35)
+        self.eye_position = (.4, .4)
         self.rect_size = rect_size
+        self.model = keras.models.load_model(MODEL_PATH)
 
     def process_frame(self, frame):
         return self.isolate_faces(cv.cvtColor(frame, cv.COLOR_BGR2GRAY), frame)
@@ -50,7 +55,25 @@ class FaceDetection(object):
 
         return output
 
+    def resize_ratio(self, img, size):
+        old_size = img.size  # old_size[0] is in (width, height) format
+        ratio = float(size) / max(old_size)
+        new_size = tuple([int(x * ratio) for x in old_size])
+        img.thumbnail(new_size, Image.ANTIALIAS)
+        new_im = Image.new("RGB", (size, size), color='white')
+        new_im.paste(img, ((size - new_size[0]) // 2,
+                           (size - new_size[1]) // 2))
+        return new_im
 
-    @classmethod
     def labelize_face(self, face):
-        return "man"
+        feed = []
+        cv.imshow("face", face)
+        newimg = Image.fromarray(face)
+        newimg = self.resize_ratio(newimg, 96)
+        newimg = np.array(newimg)
+        feed.append(newimg)
+        feed = np.array(feed)
+        predictions = self.model.predict(feed)
+        if np.argmax(predictions[0]) == 0:
+            return "man"
+        return "woman"
