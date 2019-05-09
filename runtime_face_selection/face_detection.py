@@ -6,13 +6,14 @@ from PIL import Image
 from tensorflow import keras
 
 
-MODEL_PATH = "model.h5"
+MODEL_PATH = "model90-94.h5"
+#MODEL_PATH = "model2.h5"
 
 class FaceDetection(object):
-    def __init__(self, rect_size=400):
+    def __init__(self, rect_size=200):
         self.face_detector = dlib.get_frontal_face_detector()
         self.face_predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
-        self.eye_position = (.4, .4)
+        self.eye_position = (.35, .35)
         self.rect_size = rect_size
         self.model = keras.models.load_model(MODEL_PATH)
 
@@ -67,7 +68,7 @@ class FaceDetection(object):
 
     def labelize_face(self, face):
         feed = []
-        cv.imshow("face", face)
+        #cv.imshow("face", face)
         newimg = Image.fromarray(face)
         newimg = self.resize_ratio(newimg, 96)
         newimg = np.array(newimg)

@@ -76,14 +76,15 @@ def train(args):
     print('Test loss:', score[0])
     print('Test accuracy:', score[1])
     print("Predict :", model.predict(X_test[:4]))
-    model.save(score[1] + "-last-" + LOCAL_MODEL_FILE)
+    model.save("last-" + LOCAL_MODEL_FILE)
     # predict first 4 images in the test set
     print("Predict :", model.predict(X_test[:4]))
     logs = file_io.list_directory("logs")
+    print("logs = ", logs)
     IO_utils.save_file_in_cloud("last-" + LOCAL_MODEL_FILE, args.job_dir + "/" + 'last-' + args.job_name)
     IO_utils.save_file_in_cloud(LOCAL_MODEL_FILE, args.job_dir + "/" + args.job_name)
     for entry in logs:
-        IO_utils.save_file_in_cloud("logs" + args.job_name + "/" + entry, args.job_dir + "/logs/" + entry)
+        IO_utils.save_file_in_cloud("logs/" + entry, args.job_dir + "/logs/" + entry)
 
 
 if __name__ == '__main__':
